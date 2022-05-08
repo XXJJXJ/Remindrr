@@ -14,7 +14,7 @@ async def on_message(message):
     # to prevent chatbot from running infinitely to its own messages
     if message.author == client.user:
         return
-    username = str(message.author).split("#")[0]
+    username = str(message.author)
     user_message = str(message.content)
     if not user_message.startswith("!"):
         return
@@ -33,10 +33,11 @@ async def on_message(message):
         elif user_message.lower() == 'bye':
             await message.channel.send(f'See ya later {username}!')
             return
-        elif user_message.startswith("help"):
+        elif user_message.lower() == "help":
             await message.channel.send('Help function under development')
             return
-        elif user_message.startswith("addTask"):
+
+        elif user_message.startswith("addTask "):
             # can modify to account for duplicates and give a response without
             #
             try:
@@ -44,22 +45,23 @@ async def on_message(message):
                 priority = components[3]
                 date = components[2]
                 taskName = components[1]
-                rmdr.addTask(str(message.author), taskName, date, priority)
+                msg = rmdr.addTask(str(message.author), taskName, date, priority)
                 # get message
-                await message.channel.send(f'Task added:\n\nTask: {taskName}\nDeadline: {date}\nPriority: {priority}')
-                await message.channel.send('addTask Function under development')
+                await message.channel.send(msg)
             except:
                 await message.channel.send('''Format for addTask command is: E.g.\n\n!addTask taskname ddmmyyyy priority(1 for highest, larger numbers for lower priority)''')
 
         elif user_message.startswith("myTasks"):
-            rmdr.myTask(str(message.author))
-            await message.channel.send('myTasks Function under development')
+            await message.channel.send(rmdr.myTask(username))
 
-        elif user_message.startswith("deleteTask"):
+        elif user_message.startswith("deleteTask "):
             # delete by name easy --> next time add a delete by index
-            await message.channel.send('deleteTask Function under development')
+            position = user_message.find(" ") #find first space and the rest are the name
+            # TODO: Might want to do some error handling here
+            taskName = user_message[position + 1:]
+            await message.channel.send(rmdr.deleteTask(username, taskName))
 
-        elif user_message.startswith("setReminder"):
+        elif user_message.startswith("setReminder "):
             await message.channel.send('setReminder Function under development')
 
         elif user_message.startswith("timeNow"):
