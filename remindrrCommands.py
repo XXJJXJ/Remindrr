@@ -14,3 +14,9 @@ def deleteTask(user, taskName):
 def setReminder(user, reminderTime):
     print(f"Reminder set to: {reminderTime}")
 
+def getTime():
+    now = datetime.datetime.now()
+    date_time = now.strftime("%d %b %Y, %H:%M")
+    msg = f'The current date and time is: {date_time}'
+    return msg
+

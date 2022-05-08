@@ -62,6 +62,9 @@ async def on_message(message):
         elif user_message.startswith("setReminder"):
             await message.channel.send('setReminder Function under development')
 
+        elif user_message.startswith("timeNow"):
+            await message.channel.send(rmdr.getTime())
+
         else:
             await message.channel.send("Sorry but I don't understand what you want! :sweat_smile:")
 
