@@ -16,24 +16,31 @@ database_group = database.collection("Groups")
 
 # Constants
 TASKS = "Tasks"
+HELP = "Features available are:\n\n" \
+       "1. !addTask taskname, dd/mm/yyyy\n" \
+       "2. !deleteTask taskname\n" \
+       "3. !myTasks\n" \
+       "4. !setTimer timeInSeconds"
 
 
-def addTask(user, taskName, deadline, priority):
+def addTask(user, taskname, deadline):
     # check for duplicates and give "error"
-    doc = database_user.document(user).collection(TASKS).document(taskName).get()
+    doc = database_user.document(user).collection(TASKS).document(taskname).get()
     if doc.exists:
-        return f"Task: {taskName} already exists!"
-    # TODO: parse deadline into dateTime object...
+        return f"Task: {taskname} already exists!"
 
-    database_user.document(user).collection(TASKS).document(taskName).set(
+    dateComponents = deadline.split("/")
+    day = int(dateComponents[0])
+    month = int(dateComponents[1])
+    year = int(dateComponents[2])
+    date = datetime.datetime(year, month, day, 0, 0, 0)
+    database_user.document(user).collection(TASKS).document(taskname).set(
         {
-            "name": taskName,
-            "deadline" : deadline,
-            "priority" : priority
+            "name": taskname,
+            "deadline": date # might have error, try later
         }
     )
-
-    return f"Adding:\n\nTask: {taskName}\nDeadline: {deadline}\nPriority: {priority}\n\nDone! :white_check_mark:" #should be a message to be sent by bot
+    return f"Adding:\n\nTask: {taskname}\nDeadline: {deadline}\n\nDone! :white_check_mark:" #should be a message to be sent by bot
 
 
 def myTask(user):
