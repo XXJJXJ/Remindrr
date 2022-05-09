@@ -42,12 +42,21 @@ def myTask(user):
     msg = ""
     for d in docs:
         data = d.to_dict()
-        # TODO: need a method to parse the time
-        task = f'{count}. Task: {data["name"]}, Deadline: {data["deadline"]}, Priority: {data["priority"]}\n'
+        # parse time
+        components = str(data["deadline"]).split(" ")[0].split("-")
+        year = int(components[0])
+        month = int(components[1])
+        day = int(components[2])
+        deadline = datetime.date(year, month, day)
+        task = f'{count}. Task: {data["name"]}, Deadline: {deadline.strftime("%d %b %Y")}\n'
         msg += task
         count += 1
+    if msg == "":
+        return "You do not have any tasks! Try adding some tasks with !addTask :smiley:"
+
     print(msg)
-    return msg #time currently in UTC, might need an option to account for timezone
+    return msg
+
 
 
 def deleteTask(user, taskName):
