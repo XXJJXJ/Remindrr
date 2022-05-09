@@ -6,6 +6,7 @@ import datetime
 import firebase_admin
 from firebase_admin import firestore
 from firebase_admin import credentials
+from asyncio import sleep
 
 cred = credentials.Certificate("remindrr-firebase-adminsdk.json") #input is the path to file
 firebase_admin.initialize_app(cred)
@@ -75,11 +76,16 @@ def deleteTask(user, taskName):
         print(f"Deleting Task: {taskName}")
         return f"Deleteing Task: {taskName} :white_check_mark:" #msg sent by bot
     else:
-        return f"No task named: {taskName} found! Pls check again! :disappointed_relieved:"
+        return f"No task named: {taskName} found! Pls check again! :disappointed_relieved:\n" \
+               f"Correct format: !deleteTask taskname"
 
 
 def setReminder(user, reminderTime):
     print(f"Reminder set to: {reminderTime}")
+
+async def setTimeout(user, seconds):
+    await sleep(seconds)
+    return f'Time is up! Your tasks are:\n\n' + myTask(user)
 
 def getTime():
     now = datetime.datetime.now()
