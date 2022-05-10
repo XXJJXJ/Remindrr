@@ -21,7 +21,9 @@ HELP = "Features available are:\n\n" \
        "1. !addTask taskname, dd/mm/yyyy\n" \
        "2. !deleteTask taskname\n" \
        "3. !myTasks\n" \
-       "4. !setTimer time-in-seconds"
+       "4. !setReminder time_in_24hr_format\n" \
+       "5. !offAlarm\n" \
+       "6. !setTimer time-in-seconds"
 
 def initialiseUser(user):
     database_user.document(user).set({
