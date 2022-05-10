@@ -46,10 +46,10 @@ def addTask(user, taskname, deadline):
 
 def myTask(user):
     docs = database_user.document(user).collection(TASKS).get()
-    #TODO: Sort according to date
+    sorted_docs = sorted(docs, key=lambda x:x.to_dict()["deadline"])
     count = 1
     msg = ""
-    for d in docs:
+    for d in sorted_docs:
         data = d.to_dict()
         # parse time
         components = str(data["deadline"]).split(" ")[0].split("-")
