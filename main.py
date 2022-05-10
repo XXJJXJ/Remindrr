@@ -46,9 +46,10 @@ async def on_message(message):
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.") # for debugging
                 await message.channel.send(
-                    f"Wrong input format for addTask! :woozy_face:\n"
-                    f"Format for addTask command is:\n\n"
-                    f"!addTask taskname, dd/mm/yyyy"
+                    "Wrong input format for addTask! :woozy_face:\n"
+                    "Format for addTask command is:\n\n"
+                    "!addTask taskname, dd/mm/yyyy\n"
+                    "**Note** Avoid the use of slashes ('/') and commas(',') in your taskname"
                 )
 
         elif user_message.startswith("myTasks"):
@@ -87,7 +88,7 @@ async def on_message(message):
                 else:
                     timeToWait = timeToWait.total_seconds()
 
-                print(f"Time to wait: {timeToWait} seconds")
+                # print(f"Time to wait: {timeToWait} seconds")
                 await rmdr.wait(timeToWait)
                 # wait first, then after waiting if it is still the same, remind
                 while rmdr.isAlarmOn(username) and rmdr.getAlarmTime(username) == remindTime:
