@@ -23,6 +23,11 @@ HELP = "Features available are:\n\n" \
        "3. !myTasks\n" \
        "4. !setTimer time-in-seconds"
 
+def initialiseUser(user):
+    database_user.document(user).set({
+        "name": user,
+        "alarmOn": False
+    })
 
 def addTask(user, taskname, deadline):
     # check for duplicates and give "error"
