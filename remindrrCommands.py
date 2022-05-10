@@ -38,7 +38,7 @@ def addTask(user, taskname, deadline):
     database_user.document(user).collection(TASKS).document(taskname).set(
         {
             "name": taskname,
-            "deadline": date # might have error, try later
+            "deadline": date
         }
     )
     return f"Adding:\n\nTask: {taskname}\nDeadline: {deadline}\n\nDone! :white_check_mark:" #should be a message to be sent by bot
@@ -71,7 +71,6 @@ def myTask(user):
 def deleteTask(user, taskName):
     # check for match
     doc = database_user.document(user).collection(TASKS).document(taskName).get()
-
     if doc.exists:
         database_user.document(user).collection(TASKS).document(taskName).delete()
         print(f"Deleting Task: {taskName}")
