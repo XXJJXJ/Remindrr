@@ -12,7 +12,6 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # to prevent chatbot from running infinitely to its own messages
     if message.author == client.user:
         return
     username = str(message.author)
@@ -42,9 +41,7 @@ async def on_message(message):
                 components = user_message.split(",")
                 date = components[1].strip()
                 taskName = components[0].split(" ", 1)[1].strip()
-                msg = rmdr.addTask(str(message.author), taskName, date)
-                # get message
-                await message.channel.send(msg)
+                await message.channel.send(rmdr.addTask(str(message.author), taskName, date))
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.") # for debugging
                 await message.channel.send(
@@ -58,27 +55,49 @@ async def on_message(message):
 
         elif user_message.startswith("deleteTask"):
             # delete by name easy --> next time add a delete by index
-            position = user_message.find(" ") #find first space and the rest are the name
-            if position < 0:
-                await message.channel.send("Correct format:\n\n!deleteTask taskname :woozy_face:")
-            else:
-                taskName = user_message[position + 1:]
+            try:
+                args = user_message.split(" ", 1) # split at most 1 time
+                assert args[0] == "deleteTask", "Incorrect format"
+                taskName = args[1]
                 await message.channel.send(rmdr.deleteTask(username, taskName))
+            except:
+                await message.channel.send(
+                    "Wrong input format for deleteTask! :woozy_face:\n"
+                    "Format for deleteTask command is:\n\n"
+                    "!deleteTask taskname"
+                )
 
-        elif user_message.startswith("setReminder "):
-            await message.channel.send('setReminder Function under development')
+        elif user_message.startswith("setReminder"):
+            try:
+                args = user_message.split(" ")
+                assert args[0] == "setReminder"
+                time = args[1]
+                await message.channel.send(rmdr.setReminder(username, time))
+            except:
+                await message.channel.send(
+                    "Wrong input format for setReminder! :woozy_face:\n"
+                    "Format for setReminder command is:\n\n"
+                    "!setReminder time_in_24hr_format e.g. 2359"
+                )
 
-        elif user_message.startswith("timeNow"):
-            await message.channel.send(rmdr.getTime())
+        elif user_message == "timeNow":
+            await message.channel.send(rmdr.getTime(username))
 
-        elif user_message.startswith("setTimer "):
-            # time in seconds
-            components = user_message.split(" ")
-            time = int(components[1])
-            await message.channel.send(await rmdr.setTimeout(username, time))
+        elif user_message.startswith("setTimer"):
+            try:
+                components = user_message.split(" ")
+                time_in_seconds = int(components[1])
+                await message.channel.send(await rmdr.setTimeout(username, time_in_seconds))
+            except:
+                await message.channel.send(
+                    "Wrong input format for setTimer! :woozy_face:\n"
+                    "Format for setTimer command is:\n\n"
+                    "!setTimer time_in_seconds"
+                )
 
         else:
-            await message.channel.send("Sorry but I don't understand what you want! :sweat_smile:")
+            await message.channel.send("Sorry but I don't understand what you want!\n\n"
+                                       "Type !help for assistance! :sweat_smile:")
 
 
 client.run(TOKEN)
