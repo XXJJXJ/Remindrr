@@ -21,7 +21,7 @@ HELP = "Features available are:\n\n" \
        "1. !addTask taskname, dd/mm/yyyy\n" \
        "2. !deleteTask taskname\n" \
        "3. !myTasks\n" \
-       "4. !setTimer timeInSeconds"
+       "4. !setTimer time-in-seconds"
 
 
 def addTask(user, taskname, deadline):
@@ -46,6 +46,7 @@ def addTask(user, taskname, deadline):
 
 def myTask(user):
     docs = database_user.document(user).collection(TASKS).get()
+    #TODO: Sort according to date
     count = 1
     msg = ""
     for d in docs:
@@ -74,23 +75,33 @@ def deleteTask(user, taskName):
     if doc.exists:
         database_user.document(user).collection(TASKS).document(taskName).delete()
         print(f"Deleting Task: {taskName}")
-        return f"Deleteing Task: {taskName} :white_check_mark:" #msg sent by bot
+        return f"Deleting Task: {taskName} :white_check_mark:" #msg sent by bot
     else:
         return f"No task named: {taskName} found! Pls check again! :disappointed_relieved:\n" \
                f"Correct format: !deleteTask taskname"
 
 
 def setReminder(user, reminderTime):
+    #TODO: Need to use user's timezone data, need to send a message to ask them to set a timezone, else "error"
     print(f"Reminder set to: {reminderTime}")
 
 async def setTimeout(user, seconds):
     await sleep(seconds)
     return f'Time is up! Your tasks are:\n\n' + myTask(user)
 
-def getTime():
-    now = datetime.datetime.now()
+def setTimezone(user, timezone):
+    #TODO: write into user's profile their timezone and a !helpTz
+    return "Development in progress"
+
+def getTime(user):
+    now = datetime.datetime.now() #in the deployment is UTC
+    #TODO: Store a timezone profile for users, then use it to determine offset
+    #
+    #TODO: If no timezone field detected, give warning and default UTC time given
+    # Ask user to set using !setTimezone, use !helpTz to get information of timezone
+    #
     date_time = now.strftime("%d %b %Y, %H:%M")
-    msg = f'The current date and time is: {date_time}'
+    msg = f'The current date and time at your country is: {date_time}'
     return msg
 
 
