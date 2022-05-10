@@ -84,46 +84,70 @@ def deleteTask(user, taskName):
         return f"No task named: {taskName} found! Pls check again! :disappointed_relieved:\n" \
                f"Correct format: !deleteTask taskname"
 
-
+# NOTE: Currently only supports Singapore time
 def setReminder(user, reminderTime):
-    #TODO: Need to use user's timezone data, need to send a message to ask them to set a timezone, else "error"
-    print(f"Reminder set to: {reminderTime}")
+    #TODO: Possible expansion, need to use user's timezone data,
+    # need to send a message to ask them to set a timezone, else "error"
+    msg = f"Reminder set to: {reminderTime + datetime.timedelta(hours=8)}"
+    print(msg)
+    return msg
+
+async def wait(seconds):
+    await sleep(seconds)
 
 async def setTimeout(user, seconds):
-    await sleep(seconds)
+    await wait(seconds)
     return f'Time is up! Your tasks are:\n\n' + myTask(user)
+
+def setAlarmOn(user, alarmTime):
+    # used with setReminder
+    data = database_user.document(user).get()
+    if not data.exists:
+        initialiseUser(user)
+    database_user.document(user).update({"alarmOn": True, "alarmTime": alarmTime})
+
+def setAlarmOff(user):
+    # used as standalone command
+    data = database_user.document(user).get()
+    if not data.exists:
+        initialiseUser(user)
+    database_user.document(user).update({"alarmOn": False})
+    return "Your alarm has successfully been offed"
+
+def isAlarmOn(user):
+    data = database_user.document(user).get().to_dict()
+    return data["alarmOn"]
+
+def getAlarmTime(user):
+    data = database_user.document(user).get().to_dict()
+    date_time = data["alarmTime"]
+    print(date_time) # 2022-05-20 00:35:00+00:00
+    date = str(date_time).split(" ")[0].split("-")
+    year = int(date[0])
+    month = int(date[1])
+    day = int(date[2])
+    time = str(date_time).split(" ")[1].split(":")
+    deadline = datetime.datetime(year, month, day, int(time[0]), int(time[1]), 0)
+    return deadline
+
 
 def setTimezone(user, timezone):
     #TODO: write into user's profile their timezone and a !helpTz
     return "Development in progress"
 
 def getTime(user):
-    now = datetime.datetime.now() #in the deployment is UTC
-    #TODO: Store a timezone profile for users, then use it to determine offset
-    #
-    #TODO: If no timezone field detected, give warning and default UTC time given
-    # Ask user to set using !setTimezone, use !helpTz to get information of timezone
-    #
+    now = datetime.datetime.utcnow()
+    # TODO: Store a timezone profile for users, then use it to determine offset
+    #  If no timezone field detected, give warning and default UTC time given
+    #  Ask user to set using !setTimezone, use !helpTz to get information of timezone
+    timeDifference = datetime.timedelta(hours=8)
+    now += timeDifference
     date_time = now.strftime("%d %b %Y, %H:%M")
-    msg = f'The current date and time at your country is: {date_time}'
+    msg = f'The current date and time at Singapore is: {date_time}'
     return msg
 
 
 ### Firestore (Writing Guide)
-'''
-# database_user.add({ "username" : "DummyUser Test"}) # random ID
-database_user.document("DummyUser Tester").set({"username" : "DummyUser Test"}) # set ID to "DummyUser Tester", overwrites existing document
-# database_group.add({ "Group Name" : "DummyGroup Test"}) # random ID
-database_group.document("DummyGroup Tester").set({"Group Name" : "DummyGroup Test"}) # set ID to "DummyGroup Tester", overwrites existing document
-
-## Merging
-database_user.document("DummyUser Tester").set({"Gender" : "Nil"}, merge=True) # adds a "Gender" field to the DummyUser Document
-
-## Adding (to) sub-collections
-database_user.document("DummyUser Tester").collection("Tasks").document("DummyTask1").set({"deadline": "NIL", "priority": 1})
-'''
-
 ### Firestore (Reading Guide):
 ## https://github.com/codefirstio/Cloud_Firestore_CRUD_Tutorials/blob/main/read_data.py
 # Testing
-# myTask("John") # note UTC time is 8hrs slower than GMT
