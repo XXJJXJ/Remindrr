@@ -1,3 +1,4 @@
+import datetime
 import discord
 import remindrrCommands as rmdr
 import sys
@@ -69,11 +70,35 @@ async def on_message(message):
 
         elif user_message.startswith("setReminder"):
             try:
+                # Possible error, setReminder multiple times cannot remove... unless wait for 24hrs later
                 args = user_message.split(" ")
                 assert args[0] == "setReminder"
                 time = args[1]
-                await message.channel.send(rmdr.setReminder(username, time))
+                # this chunk below can be cleaner
+                now = datetime.datetime.utcnow()
+                remindTime = datetime.datetime(now.year, now.month, now.day, int(time[0:2]), int(time[2:]), 0) - datetime.timedelta(hours=8)
+                timeToWait = remindTime - now
+                # method to set alarmOn
+                await message.channel.send(rmdr.setReminder(username, remindTime))
+                rmdr.setAlarmOn(username, remindTime)
+                if timeToWait.total_seconds() < 0:
+                    timeToWait = timeToWait.total_seconds() + 60*60*24 # next day
+                    remindTime += datetime.timedelta(days=1)
+                else:
+                    timeToWait = timeToWait.total_seconds()
+
+                print(f"Time to wait: {timeToWait} seconds")
+                await rmdr.wait(timeToWait)
+                # wait first, then after waiting if it is still the same, remind
+                while rmdr.isAlarmOn(username) and rmdr.getAlarmTime(username) == remindTime:
+                    # Need to ensure this "thread" don't run infinitely
+                    await message.channel.send(rmdr.myTask(username))
+                    remindTime += datetime.timedelta(days=1)
+                    rmdr.setAlarmOn(username, remindTime)
+                    timeToWait = 60 * 60 * 24
+                    await rmdr.wait(timeToWait)
             except:
+                print("Oops!", sys.exc_info()[0], sys.exc_info()[1], "occurred.")  # for debugging
                 await message.channel.send(
                     "Wrong input format for setReminder! :woozy_face:\n"
                     "Format for setReminder command is:\n\n"
@@ -82,6 +107,9 @@ async def on_message(message):
 
         elif user_message == "timeNow":
             await message.channel.send(rmdr.getTime(username))
+
+        elif user_message == "offAlarm":
+            await message.channel.send(rmdr.setAlarmOff(username))
 
         elif user_message.startswith("setTimer"):
             try:
@@ -101,3 +129,4 @@ async def on_message(message):
 
 
 client.run(TOKEN)
+# when we activate the bot, need to re-activate all the Reminder for everyone (?) hmmmm
