@@ -2,46 +2,44 @@ import remindrrCommands as rmdr
 import Constants
 import datetime
 
-async def handleMessage(username, user_message, message):
-    if user_message.lower() == "help":
+async def handleMessage(username, command, args, message):
+    if command == "help":
         await message.author.send(Constants.DMHELP)
 
-    elif user_message.startswith("addTask"):
+    elif command.startswith("addtask"):
         try:
-            components = user_message.split(",")
+            components = args.split(",")
             date = components[1].strip()
-            taskName = components[0].split(" ", 1)[1].strip()
+            taskName = components[0].strip()
             await message.author.send(rmdr.addTask(str(message.author), taskName, date))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("addTask")
+            await message.author.send(Constants.getWrongFormatMessage("addtask")
                                       + "\n**Note** Avoid the use of slashes ('/') and commas(',') in your taskname")
 
-    elif user_message.startswith("myTasks"):
+    elif command.startswith("mytasks"):
         await message.author.send(rmdr.myTask(username))
 
-    elif user_message.startswith("deleteTask"):
+    elif command.startswith("deletetask"):
         # delete by name easy --> next time add a delete by index
         try:
-            args = user_message.split(" ", 1)  # split at most 1 time
-            assert args[0] == "deleteTask", "Incorrect format"
-            taskName = args[1]
+            assert command == "deletetask", "Incorrect format"
+            taskName = args
             await message.author.send(rmdr.deleteTask(username, taskName))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("deleteTask"))
+            await message.author.send(Constants.getWrongFormatMessage("deletetask"))
 
-    elif user_message.startswith("setReminder"):
+    elif command.startswith("setreminder"):
         try:
-            args = user_message.split(" ")
-            assert args[0] == "setReminder"
-            time = args[1]
+            assert command == "setreminder"
+            time = args
             # this chunk below can be cleaner
             now = datetime.datetime.utcnow()
             remindTime = datetime.datetime(now.year, now.month, now.day, int(time[0:2]), int(time[2:]),
                                            0) - datetime.timedelta(hours=8)
             timeToWait = remindTime - now
-
+            oneDay = 60 * 60 * 24
             if timeToWait.total_seconds() < 0:
-                timeToWait = timeToWait.total_seconds() + 60 * 60 * 24  # next day
+                timeToWait = timeToWait.total_seconds() + oneDay  # next day
                 remindTime += datetime.timedelta(days=1)
             else:
                 timeToWait = timeToWait.total_seconds()
@@ -57,21 +55,19 @@ async def handleMessage(username, user_message, message):
                 await message.author.send(rmdr.myTask(username))
                 remindTime += datetime.timedelta(days=1)
                 rmdr.setAlarmOn(username, remindTime)
-                oneDay = 60 * 60 * 24
                 await rmdr.wait(oneDay)
         except:
             await message.author.send(Constants.getWrongFormatMessage("setReminder"))
 
-    elif user_message == "timeNow":
+    elif command == "timenow":
         await message.author.send(rmdr.getTime(username))
 
-    elif user_message == "offAlarm":
+    elif command == "offalarm":
         await message.author.send(rmdr.setAlarmOff(username))
 
-    elif user_message.startswith("setTimer"):
+    elif command.startswith("settimer"):
         try:
-            components = user_message.split(" ")
-            time_in_seconds = int(components[1])
+            time_in_seconds = int(args)
             await message.author.send(await rmdr.setTimeout(username, time_in_seconds))
         except:
             await message.author.send(Constants.getWrongFormatMessage("setTimer"))
