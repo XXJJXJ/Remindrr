@@ -3,19 +3,19 @@ TASKS = "Tasks"
 
 CommandsToFormat = {
        # Individual
-       "addTask": "!addTask taskname, dd/mm/yyyy",
-       "deleteTask": "!deleteTask taskname",
-       "myTasks": "!myTasks",
-       "setReminder": "!setReminder time_in_24hr_format",
-       "offAlarm": "!offAlarm",
-       "setTimer": "!setTimer time-in-seconds",
+       "addtask": "!addTask taskname, dd/mm/yyyy",
+       "deletetask": "!deleteTask taskname",
+       "mytasks": "!myTasks",
+       "setreminder": "!setReminder time_in_24hr_format",
+       "offalarm": "!offAlarm",
+       "settimer": "!setTimer time-in-seconds",
        # Group
-       "addGrpTask": "!addGrpTask taskname, dd/mm/yyyy",
-       "deleteGrpTask": "!deleteGrpTask taskname",
-       "grpTasks": "",
-       "setGrpReminder": "!setGrpReminder time_in_24hr_format",
-       "offGrpAlarm": "",
-       "setGrpTimer": "!setGrpTimer time-in-seconds"
+       "addgrptask": "!addGrpTask taskname, dd/mm/yyyy",
+       "deletegrptask": "!deleteGrpTask taskname",
+       "grptasks": "",
+       "setgrpreminder": "!setGrpReminder time_in_24hr_format",
+       "offgrpalarm": "",
+       "setgrptimer": "!setGrpTimer time-in-seconds"
 }
 
 DMHELP = "**Individual Features** available are:\n\n" \
