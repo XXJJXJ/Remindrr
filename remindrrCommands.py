@@ -16,34 +16,46 @@ database = firestore.client()
 database_user = database.collection("Users")
 database_group = database.collection("Groups")
 
-def initialiseUser(user):
-    database_user.document(user).set({
-        "name": user,
+def initialise(db, name):
+    db.document(name).set({
+        "name": name,
         "alarmOn": False
     })
 
-def addTask(user, taskname, deadline):
-    # check for duplicates and give "error"
-    doc = database_user.document(user).collection(TASKS).document(taskname).get()
-    if doc.exists:
-        return f"Task: {taskname} already exists!"
-
+def parseDate(deadline):
     dateComponents = deadline.split("/")
     day = int(dateComponents[0])
     month = int(dateComponents[1])
     year = int(dateComponents[2])
     date = datetime.datetime(year, month, day, 0, 0, 0)
-    database_user.document(user).collection(TASKS).document(taskname).set(
+    return date
+
+# Private skeletal method for addTask and addGrpTask
+def default_addTask(db, name, taskname, deadline):
+    doc = db.document(name).collection(TASKS).document(taskname).get()
+    if doc.exists:
+        return f"Task: {taskname} already exists!"
+
+    date = parseDate(deadline)
+    db.document(name).collection(TASKS).document(taskname).set(
         {
             "name": taskname,
             "deadline": date
         }
     )
-    return f"Adding:\n\nTask: {taskname}\nDeadline: {deadline}\n\nDone! :white_check_mark:" #should be a message to be sent by bot
+    return f"Adding:\n\nTask: {taskname}\nDeadline: {deadline}\n\nDone! :white_check_mark:"
+
+def addTask(user, taskname, deadline):
+    # check for duplicates and give "error"
+    return default_addTask(database_user, user, taskname, deadline)
+
+def addGrpTask(groupname, taskname, deadline):
+    return default_addTask(database_group, groupname, taskname, deadline)
 
 
-def myTask(user):
-    docs = database_user.document(user).collection(TASKS).get()
+
+def default_listTask(db, name):
+    docs = db.document(name).collection(TASKS).get()
     sorted_docs = sorted(docs, key=lambda x:x.to_dict()["deadline"])
     count = 1
     msg = ""
@@ -64,18 +76,31 @@ def myTask(user):
     print(msg)
     return msg
 
+def myTask(username):
+    return default_listTask(database_user, username)
+
+def grpTask(groupname):
+    return default_listTask(database_group, groupname)
 
 
-def deleteTask(user, taskName):
+
+def default_deleteTask(db, name, taskName):
     # check for match
-    doc = database_user.document(user).collection(TASKS).document(taskName).get()
+    doc = db.document(name).collection(TASKS).document(taskName).get()
     if doc.exists:
-        database_user.document(user).collection(TASKS).document(taskName).delete()
+        db.document(name).collection(TASKS).document(taskName).delete()
         print(f"Deleting Task: {taskName}")
         return f"Deleting Task: {taskName} :white_check_mark:" #msg sent by bot
     else:
         return f"No task named: {taskName} found! Pls check again! :disappointed_relieved:\n" \
                f"Correct format: !deleteTask taskname"
+
+def deleteTask(username, taskname):
+    return default_deleteTask(database_user, username, taskname)
+
+def deleteGrpTask(groupname, taskname):
+    return default_deleteTask(database_group, groupname, taskname)
+
 
 # NOTE: Currently only supports Singapore time
 def setReminder(user, reminderTime):
@@ -90,29 +115,51 @@ async def wait(seconds):
 
 async def setTimeout(user, seconds):
     await wait(seconds)
-    return f'Time is up! Your tasks are:\n\n' + myTask(user)
+    return f'Time is up! Your tasks are...\n\n' + myTask(user)
 
-def setAlarmOn(user, alarmTime):
+async def setGrpTimeout(groupname, seconds):
+    await wait(seconds)
+    return f'Time is up! Your tasks are...\n\n' + grpTask(groupname)
+
+def default_setAlarmOn(db, name, alarmTime):
     # used with setReminder
-    data = database_user.document(user).get()
+    data = db.document(name).get()
     if not data.exists:
-        initialiseUser(user)
-    database_user.document(user).update({"alarmOn": True, "alarmTime": alarmTime})
+        initialise(db, name)
+    db.document(name).update({"alarmOn": True, "alarmTime": alarmTime})
 
-def setAlarmOff(user):
+def setAlarmOn(username, alarmTime):
+    default_setAlarmOn(database_user, username, alarmTime)
+
+def setGrpAlarmOn(groupname, alarmTime):
+    default_setAlarmOn(database_group, groupname, alarmTime)
+
+def default_setAlarmOff(db, name):
     # used as standalone command
-    data = database_user.document(user).get()
+    data = db.document(name).get()
     if not data.exists:
-        initialiseUser(user)
-    database_user.document(user).update({"alarmOn": False})
-    return "Your alarm has successfully been offed"
+        initialise(name)
+    db.document(name).update({"alarmOn": False})
+    return f"Your alarm for {name} has successfully been switched offed"
 
-def isAlarmOn(user):
-    data = database_user.document(user).get().to_dict()
+def setAlarmOff(username):
+    default_setAlarmOn(database_user, username)
+
+def setGrpAlarmOff(groupname):
+    default_setAlarmOn(database_group, groupname)
+
+def default_isAlarmOn(db, name):
+    data = db.document(name).get().to_dict()
     return data["alarmOn"]
 
-def getAlarmTime(user):
-    data = database_user.document(user).get().to_dict()
+def isAlarmOn(username):
+    return default_isAlarmOn(database_user, username)
+
+def isGrpAlarmOn(groupname):
+    return default_isAlarmOn(database_group, groupname)
+
+def default_getAlarmTime(db, name):
+    data = db.document(name).get().to_dict()
     date_time = data["alarmTime"]
     # print(date_time) # 2022-05-20 00:35:00+00:00
     date = str(date_time).split(" ")[0].split("-")
@@ -122,6 +169,12 @@ def getAlarmTime(user):
     time = str(date_time).split(" ")[1].split(":")
     deadline = datetime.datetime(year, month, day, int(time[0]), int(time[1]), 0)
     return deadline
+
+def getAlarmTime(username):
+    return default_getAlarmTime(database_user, username)
+
+def getGrpAlarmTime(groupname):
+    return default_getAlarmTime(database_group, groupname)
 
 
 def setTimezone(user, timezone):
