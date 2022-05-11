@@ -15,7 +15,10 @@ async def on_message(message):
     if message.author == client.user:
         return
     username = str(message.author)
-    user_message = str(message.content)
+    user_message = str(message.content).split(" ", 1)
+    command = user_message[0].lower()
+    args = user_message[1]
+
     if not user_message.startswith("!"):
         return
     else:
@@ -23,14 +26,14 @@ async def on_message(message):
 
     try:
         channel = str(message.channel.name) # will cause error if receive dm
+        group_name = message.channel.guild
         # log in the console
-        print(f'{username}: {user_message} ({channel})')
-        await GroupMessage.handleMessage(username, user_message, message)
+        print(f'{username}: {user_message} ({group_name} : {channel})')
+        await GroupMessage.handleMessage(username, group_name, command, args, message)
     except:
         # deal with DM functions
         print(f"DM received from {username} : {user_message}")
-        await PrivateMessage.handleMessage(username, user_message, message)
-
+        await PrivateMessage.handleMessage(username, command, args, message)
 
 client.run(TOKEN)
 # when we activate the bot, need to re-activate all the Reminder for everyone (?) hmmmm
