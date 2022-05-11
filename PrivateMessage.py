@@ -19,14 +19,14 @@ async def handleMessage(username, command, args, message):
     elif command.startswith("mytasks"):
         await message.author.send(rmdr.myTask(username))
 
-    elif command.startswith("deletetask"):
+    elif command.startswith("deltask"):
         # delete by name easy --> next time add a delete by index
         try:
-            assert command == "deletetask", "Incorrect format"
+            assert command == "deltask", "Incorrect format"
             taskName = args
             await message.author.send(rmdr.deleteTask(username, taskName))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("deletetask"))
+            await message.author.send(Constants.getWrongFormatMessage("deltask"))
 
     elif command.startswith("setreminder"):
         try:
@@ -57,7 +57,7 @@ async def handleMessage(username, command, args, message):
                 rmdr.setAlarmOn(username, remindTime)
                 await rmdr.wait(oneDay)
         except:
-            await message.author.send(Constants.getWrongFormatMessage("setReminder"))
+            await message.author.send(Constants.getWrongFormatMessage("setreminder"))
 
     elif command == "timenow":
         await message.author.send(rmdr.getTime(username))
@@ -70,7 +70,7 @@ async def handleMessage(username, command, args, message):
             time_in_seconds = int(args)
             await message.author.send(await rmdr.setTimeout(username, time_in_seconds))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("setTimer"))
+            await message.author.send(Constants.getWrongFormatMessage("settimer"))
 
     else:
         await message.author.send("Sorry but I don't understand what you want!\n\n"
