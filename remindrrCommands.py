@@ -1,4 +1,5 @@
 import datetime
+from Constants import TASKS
 
 # use firebase for data storage
 # firebase_admin for firestore
@@ -14,16 +15,6 @@ database = firestore.client()
 
 database_user = database.collection("Users")
 database_group = database.collection("Groups")
-
-# Constants
-TASKS = "Tasks"
-HELP = "Features available are:\n\n" \
-       "1. !addTask taskname, dd/mm/yyyy\n" \
-       "2. !deleteTask taskname\n" \
-       "3. !myTasks\n" \
-       "4. !setReminder time_in_24hr_format\n" \
-       "5. !offAlarm\n" \
-       "6. !setTimer time-in-seconds"
 
 def initialiseUser(user):
     database_user.document(user).set({
@@ -123,7 +114,7 @@ def isAlarmOn(user):
 def getAlarmTime(user):
     data = database_user.document(user).get().to_dict()
     date_time = data["alarmTime"]
-    print(date_time) # 2022-05-20 00:35:00+00:00
+    # print(date_time) # 2022-05-20 00:35:00+00:00
     date = str(date_time).split(" ")[0].split("-")
     year = int(date[0])
     month = int(date[1])
@@ -148,8 +139,5 @@ def getTime(user):
     msg = f'The current date and time at Singapore is: {date_time}'
     return msg
 
-
-### Firestore (Writing Guide)
-### Firestore (Reading Guide):
-## https://github.com/codefirstio/Cloud_Firestore_CRUD_Tutorials/blob/main/read_data.py
-# Testing
+### Firestore Guide
+## https://github.com/codefirstio/Cloud_Firestore_CRUD_Tutorials/
