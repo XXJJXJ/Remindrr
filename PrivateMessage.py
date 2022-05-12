@@ -20,11 +20,11 @@ async def handleMessage(username, command, args, message):
         await message.author.send(rmdr.myTask(username))
 
     elif command.startswith("deltask"):
-        # delete by name easy --> next time add a delete by index
+        # delete by index
         try:
             assert command == "deltask", "Incorrect format"
-            taskName = args
-            await message.author.send(rmdr.deleteTask(username, taskName))
+            index = int(args)
+            await message.author.send(rmdr.deleteTask(username, index))
         except:
             await message.author.send(Constants.getWrongFormatMessage("deltask"))
 

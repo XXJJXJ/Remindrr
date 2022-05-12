@@ -7,14 +7,14 @@ DELETE_TASK = "deltask"
 CommandsToFormat = {
        # Individual
        "addtask": "!addTask taskname, dd/mm/yyyy",
-       "deltask": "!delTask taskname",
+       "deltask": "!delTask index_of_task",
        "mytasks": "!myTasks",
        "setreminder": "!setReminder time_in_24hr_format",
        "offalarm": "!offAlarm",
        "settimer": "!setTimer time_in_seconds",
        # Group
        "addgrptask": "!addGrpTask taskname, dd/mm/yyyy",
-       "delgrptask": "!delGrpTask taskname",
+       "delgrptask": "!delGrpTask index_of_task",
        "grptasks": "",
        "setgrpreminder": "!setGrpReminder time_in_24hr_format",
        "offgrpalarm": "",

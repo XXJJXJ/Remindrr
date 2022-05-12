@@ -95,11 +95,26 @@ def default_deleteTask(db, name, taskName):
         return f"No task named: {taskName} found! Pls check again! :disappointed_relieved:\n" \
                f"Correct format: !deleteTask taskname"
 
-def deleteTask(username, taskname):
-    return default_deleteTask(database_user, username, taskname)
+def default_deleteByIndex(db, name, index):
+    docs = db.document(name).collection(TASKS).get()
+    if len(docs) == 0:
+         return f"There are no tasks found!"
 
-def deleteGrpTask(groupname, taskname):
-    return default_deleteTask(database_group, groupname, taskname)
+    sorted_docs = sorted(docs, key=lambda x: x.to_dict()["deadline"])
+    try:
+        assert index > 0, "Out of bounds!"
+        target = sorted_docs[index - 1]
+        target = target.to_dict()["name"]
+        return default_deleteTask(db, name, target)
+    except:
+        return f"No task at index: {index}! :disappointed_relieved:\n" \
+                "Pls check again!"
+
+def deleteTask(username, index):
+    return default_deleteByIndex(database_user, username, index)
+
+def deleteGrpTask(groupname, index):
+    return default_deleteByIndex(database_group, groupname, index)
 
 
 # NOTE: Currently only supports Singapore time

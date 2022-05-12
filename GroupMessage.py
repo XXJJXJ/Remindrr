@@ -30,8 +30,8 @@ async def handleMessage(username, group_name, command, args, message):
             # delete by name easy --> next time add a delete by index
             try:
                 assert command == "delgrptask", "Incorrect format"
-                taskName = args
-                await message.channel.send(rmdr.deleteGrpTask(group_name, taskName))
+                index = int(args)
+                await message.channel.send(rmdr.deleteGrpTask(group_name, index))
             except:
                 await message.channel.send(Constants.getWrongFormatMessage("delgrptask"))
 
@@ -93,12 +93,13 @@ async def handleMessage(username, group_name, command, args, message):
             await message.channel.send(rmdr.myTask(username))
 
         elif command.startswith("deltask"):
-            # delete by name easy --> next time add a delete by index
+            # delete by index
             try:
                 assert command == "deltask", "Incorrect format"
-                taskName = args
-                await message.channel.send(rmdr.deleteTask(username, taskName))
+                index = int(args)
+                await message.channel.send(rmdr.deleteTask(username, index))
             except:
+                print("Oops!", sys.exc_info()[1], "occurred.")  # for debugging
                 await message.channel.send(Constants.getWrongFormatMessage("deltask"))
 
         elif command.startswith("setreminder"):

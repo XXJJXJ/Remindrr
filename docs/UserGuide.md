@@ -24,12 +24,12 @@ Format: `!addTask taskname, deadline`
  * taskname: Name of the task. Note, the name should not contain "/" or "," characters.
  * deadline: Date in dd/mm/yyyy format
 
-### Delete personal task: `!deleteTask`
+### Delete personal task: `!delTask`
 
 Deletes an existing task with matching task name.
 
-Format: `!deleteTask taskname`
- * taskname: Name of the task. Note, the name should not contain "/" or "," characters.
+Format: `!delTask index`
+ * index: The numbering shown on the list when `!myTasks` (see next feature) is called.
 
 
 ### List out personal tasks: `!myTasks`
@@ -75,7 +75,7 @@ Functionality and usage of features in this section is largely similar to their 
 Adds a task with a stipulated deadline for the group.
 
 
-### Delete group task: `!deleteGrpTask`
+### Delete group task: `!delGrpTask`
 
 Deletes an existing group task with matching task name.
 
