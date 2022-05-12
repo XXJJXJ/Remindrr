@@ -6,31 +6,31 @@ async def handleMessage(username, command, args, message):
     if command == "help":
         await message.author.send(Constants.DMHELP)
 
-    elif command.startswith("addtask"):
+    elif command.startswith(Constants.ADD_TASK):
         try:
             components = args.split(",")
             date = components[1].strip()
             taskName = components[0].strip()
             await message.author.send(rmdr.addTask(str(message.author), taskName, date))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("addtask")
+            await message.author.send(Constants.getWrongFormatMessage(Constants.ADD_TASK)
                                       + "\n**Note** Avoid the use of slashes ('/') and commas(',') in your taskname")
 
-    elif command.startswith("mytasks"):
+    elif command.startswith(Constants.MY_TASKS):
         await message.author.send(rmdr.myTask(username))
 
-    elif command.startswith("deltask"):
+    elif command.startswith(Constants.DELETE_TASK):
         # delete by index
         try:
-            assert command == "deltask", "Incorrect format"
+            assert command == Constants.DELETE_TASK, "Incorrect format"
             index = int(args)
             await message.author.send(rmdr.deleteTask(username, index))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("deltask"))
+            await message.author.send(Constants.getWrongFormatMessage(Constants.DELETE_TASK))
 
-    elif command.startswith("setreminder"):
+    elif command.startswith(Constants.SET_REMINDER):
         try:
-            assert command == "setreminder"
+            assert command == Constants.SET_REMINDER
             time = args
             # this chunk below can be cleaner
             now = datetime.datetime.utcnow()
@@ -57,20 +57,20 @@ async def handleMessage(username, command, args, message):
                 rmdr.setAlarmOn(username, remindTime)
                 await rmdr.wait(oneDay)
         except:
-            await message.author.send(Constants.getWrongFormatMessage("setreminder"))
+            await message.author.send(Constants.getWrongFormatMessage(Constants.SET_REMINDER))
 
     elif command == "timenow":
         await message.author.send(rmdr.getTime(username))
 
-    elif command == "offalarm":
+    elif command == Constants.OFF_ALARM:
         await message.author.send(rmdr.setAlarmOff(username))
 
-    elif command.startswith("settimer"):
+    elif command.startswith(Constants.SET_TIMER):
         try:
             time_in_seconds = int(args)
             await message.author.send(await rmdr.setTimeout(username, time_in_seconds))
         except:
-            await message.author.send(Constants.getWrongFormatMessage("settimer"))
+            await message.author.send(Constants.getWrongFormatMessage(Constants.SET_TIMER))
 
     else:
         await message.author.send("Sorry but I don't understand what you want!\n\n"

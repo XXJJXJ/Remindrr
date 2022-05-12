@@ -12,7 +12,7 @@ async def handleMessage(username, group_name, command, args, message):
 
         # "Group" Features
         # use startswith to account for cases where they forgot spaces
-        elif command.startswith("addgrptask"):
+        elif command.startswith(Constants.ADD_GROUP_TASK):
             try:
                 components = args.split(",")
                 date = components[1].strip()
@@ -20,24 +20,24 @@ async def handleMessage(username, group_name, command, args, message):
                 await message.channel.send(rmdr.addGrpTask(group_name, taskName, date))
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.")  # for debugging
-                await message.channel.send(Constants.getWrongFormatMessage("addgrptask")
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.ADD_GROUP_TASK)
                                            + "\n**Note** Avoid the use of slashes ('/') and commas(',') in your taskname")
 
-        elif command == "grptasks":
+        elif command == Constants.GROUP_TASKS:
             await message.channel.send(rmdr.grpTask(group_name))
 
-        elif command.startswith("delgrptask"):
+        elif command.startswith(Constants.DELETE_GROUP_TASK):
             # delete by name easy --> next time add a delete by index
             try:
-                assert command == "delgrptask", "Incorrect format"
+                assert command == Constants.DELETE_GROUP_TASK, "Incorrect format"
                 index = int(args)
                 await message.channel.send(rmdr.deleteGrpTask(group_name, index))
             except:
-                await message.channel.send(Constants.getWrongFormatMessage("delgrptask"))
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.DELETE_GROUP_TASK))
 
-        elif command.startswith("setgrpreminder"):
+        elif command.startswith(Constants.SET_GROUP_REMINDER):
             try:
-                assert command == "setgrpreminder"
+                assert command == Constants.SET_GROUP_REMINDER
                 time = args
                 # this chunk below can be cleaner
                 now = datetime.datetime.utcnow()
@@ -64,21 +64,21 @@ async def handleMessage(username, group_name, command, args, message):
                     await rmdr.wait(oneDay)
             except:
                 print("Oops!", sys.exc_info()[0], sys.exc_info()[1], "occurred.")  # for debugging
-                await message.channel.send(Constants.getWrongFormatMessage("setgrpreminder"))
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.SET_GROUP_REMINDER))
 
-        elif command == "offgrpalarm":
+        elif command == Constants.OFF_GROUP_ALARM:
             await message.channel.send(rmdr.setGrpAlarmOff(group_name))
 
-        elif command.startswith("setgrptimer"):
+        elif command.startswith(Constants.SET_GROUP_TIMER):
             try:
                 time_in_seconds = int(args)
                 await message.channel.send(await rmdr.setGrpTimeout(group_name, time_in_seconds))
             except:
-                await message.channel.send(Constants.getWrongFormatMessage("setgrptimer"))
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.SET_GROUP_TIMER))
 
         # "Individual" Features, can be replaced with PrivateMessage.handleMessage if send privately,
         # current implementation, replies to the group
-        elif command.startswith("addtask"):
+        elif command.startswith(Constants.ADD_TASK):
             try:
                 components = args.split(",")
                 date = components[1].strip()
@@ -86,25 +86,25 @@ async def handleMessage(username, group_name, command, args, message):
                 await message.channel.send(rmdr.addTask(username, taskName, date))
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.")  # for debugging
-                await message.channel.send(Constants.getWrongFormatMessage("addtask")
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.ADD_TASK)
                                            + "\n**Note** Avoid the use of slashes ('/') and commas(',') in your taskname")
 
-        elif command == "mytasks":
+        elif command == Constants.MY_TASKS:
             await message.channel.send(rmdr.myTask(username))
 
-        elif command.startswith("deltask"):
+        elif command.startswith(Constants.DELETE_TASK):
             # delete by index
             try:
-                assert command == "deltask", "Incorrect format"
+                assert command == Constants.DELETE_TASK, "Incorrect format"
                 index = int(args)
                 await message.channel.send(rmdr.deleteTask(username, index))
             except:
                 print("Oops!", sys.exc_info()[1], "occurred.")  # for debugging
-                await message.channel.send(Constants.getWrongFormatMessage("deltask"))
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.DELETE_TASK))
 
-        elif command.startswith("setreminder"):
+        elif command.startswith(Constants.SET_REMINDER):
             try:
-                assert command == "setreminder"
+                assert command == Constants.SET_REMINDER
                 time = args
                 # this chunk below can be cleaner
                 now = datetime.datetime.utcnow()
@@ -131,20 +131,20 @@ async def handleMessage(username, group_name, command, args, message):
                     await rmdr.wait(oneDay)
             except:
                 print("Oops!", sys.exc_info()[0], sys.exc_info()[1], "occurred.")  # for debugging
-                await message.channel.send(Constants.getWrongFormatMessage("setreminder"))
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.SET_REMINDER))
 
         elif command == "timenow":
             await message.channel.send(rmdr.getTime(username))
 
-        elif command == "offalarm":
+        elif command == Constants.OFF_ALARM:
             await message.channel.send(rmdr.setAlarmOff(username))
 
-        elif command.startswith("settimer"):
+        elif command.startswith(Constants.SET_TIMER):
             try:
                 time_in_seconds = int(args)
                 await message.channel.send(await rmdr.setTimeout(username, time_in_seconds))
             except:
-                await message.channel.send(Constants.getWrongFormatMessage("settimer"))
+                await message.channel.send(Constants.getWrongFormatMessage(Constants.SET_TIMER))
 
         else:
             await message.channel.send("Sorry but I don't understand what you want!\n\n"
