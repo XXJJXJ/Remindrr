@@ -130,11 +130,11 @@ async def wait(seconds):
 
 async def setTimeout(user, seconds):
     await wait(seconds)
-    return f'Time is up! Your tasks are...\n\n' + myTask(user)
+    return f'Time is up! Your personal tasks are...\n\n' + myTask(user)
 
 async def setGrpTimeout(groupname, seconds):
     await wait(seconds)
-    return f'Time is up! Your tasks are...\n\n' + grpTask(groupname)
+    return f'Time is up! Tasks for your group ({groupname}) are...\n\n' + grpTask(groupname)
 
 def default_setAlarmOn(db, name, alarmTime):
     # used with setReminder
