@@ -119,8 +119,6 @@ def deleteGrpTask(groupname, index):
 
 # NOTE: Currently only supports Singapore time
 def setReminder(user, reminderTime):
-    #TODO: Possible expansion, need to use user's timezone data,
-    # need to send a message to ask them to set a timezone, else "error"
     msg = f"Reminder set to: {reminderTime + datetime.timedelta(hours=8)}"
     print(msg)
     return msg
@@ -193,19 +191,40 @@ def getGrpAlarmTime(groupname):
 
 
 def setTimezone(user, timezone):
-    #TODO: write into user's profile their timezone and a !helpTz
     return "Development in progress"
 
 def getTime(user):
     now = datetime.datetime.utcnow()
-    # TODO: Store a timezone profile for users, then use it to determine offset
-    #  If no timezone field detected, give warning and default UTC time given
-    #  Ask user to set using !setTimezone, use !helpTz to get information of timezone
     timeDifference = datetime.timedelta(hours=8)
     now += timeDifference
     date_time = now.strftime("%d %b %Y, %H:%M")
     msg = f'The current date and time at Singapore is: {date_time}'
     return msg
+
+def default_getReminderStatus(db, name):
+    status = default_isAlarmOn(db, name)
+    if not status:
+        return f"Alarm for: {name} is currently off! :eyes:"
+
+    alarm_time = default_getAlarmTime(db, name)
+    now = datetime.datetime.utcnow()
+    timeLeft = (alarm_time - now).total_seconds()
+    # print(timeLeft)
+    if timeLeft < 0:
+        return f"Something is wrong with the system :eyes:\n" \
+               f"Pls contact the administrator at yexinjian1506@gmail.com\n" \
+               f"Or telegram: @XXJJXJ"
+
+    hours = int(timeLeft // (60 * 60))
+    minutes = int((timeLeft // 60) % 60)
+    return f"{hours} hrs {minutes} mins until reminder for {name}"
+
+def getReminderStatus(username):
+    return default_getReminderStatus(database_user, username)
+
+def getGrpReminderStatus(groupname):
+    return default_getReminderStatus(database_group, groupname)
+
 
 ### Firestore Guide
 ## https://github.com/codefirstio/Cloud_Firestore_CRUD_Tutorials/

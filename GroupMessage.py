@@ -39,7 +39,6 @@ async def handleMessage(username, group_name, command, args, message):
             try:
                 assert command == Constants.SET_GROUP_REMINDER
                 time = args
-                # this chunk below can be cleaner
                 now = datetime.datetime.utcnow()
                 remindTime = datetime.datetime(now.year, now.month, now.day, int(time[0:2]), int(time[2:]), 0) - datetime.timedelta(hours=8)
                 timeToWait = remindTime - now
@@ -133,9 +132,6 @@ async def handleMessage(username, group_name, command, args, message):
                 print("Oops!", sys.exc_info()[0], sys.exc_info()[1], "occurred.")  # for debugging
                 await message.channel.send(Constants.getWrongFormatMessage(Constants.SET_REMINDER))
 
-        elif command == "timenow":
-            await message.channel.send(rmdr.getTime(username))
-
         elif command == Constants.OFF_ALARM:
             await message.channel.send(rmdr.setAlarmOff(username))
 
@@ -145,6 +141,16 @@ async def handleMessage(username, group_name, command, args, message):
                 await message.channel.send(await rmdr.setTimeout(username, time_in_seconds))
             except:
                 await message.channel.send(Constants.getWrongFormatMessage(Constants.SET_TIMER))
+
+        # Easter egg features
+        elif command == "timenow":
+            await message.channel.send(rmdr.getTime(username))
+
+        elif command == "rstatus":
+            await message.channel.send(rmdr.getReminderStatus(username))
+
+        elif command == "rgrpstatus":
+            await message.channel.send(rmdr.getGrpReminderStatus(group_name))
 
         else:
             await message.channel.send("Sorry but I don't understand what you want!\n\n"
