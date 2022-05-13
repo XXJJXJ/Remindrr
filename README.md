@@ -10,6 +10,11 @@ This bot aims to provide regular task reminders to help users/groups keep track 
 
 ## Quickstart
 
+
 ### How to add the bot to your server
 
+To add this bot into your discord group, use this [link here](https://discord.com/api/oauth2/authorize?client_id=972056041720274955&permissions=8&scope=bot)
+
 ### Example usages
+
+To be added soon...
