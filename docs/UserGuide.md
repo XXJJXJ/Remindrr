@@ -26,7 +26,7 @@ Format: `!addTask taskname, deadline`
 
 ### Delete personal task: `!delTask`
 
-Deletes an existing task with matching task name.
+Deletes an existing task with matching task index.
 
 Format: `!delTask index`
  * index: The numbering shown on the list when `!myTasks` (see next feature) is called.
@@ -77,7 +77,7 @@ Adds a task with a stipulated deadline for the group.
 
 ### Delete group task: `!delGrpTask`
 
-Deletes an existing group task with matching task name.
+Deletes an existing group task with matching task index.
 
 
 ### List out group tasks: `!grpTasks`
